@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -8,22 +8,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Registration1 = () => {
 
-const {
-  register,
-  formState: {
-    errors,
-  },
-  handleSubmit,
-} = useForm({
-  mode: "onBlur"
-});
-
+const { register, formState: { errors}, handleSubmit, watch } = useForm({ mode: "onBlur"});
+const password = useRef({});
+password.current = watch("password", "");
 
 const onSubmit = (data) => {
   alert(JSON.stringify(data))
 }
-
-
 
   return (
     <div className="page">
@@ -169,14 +160,17 @@ const onSubmit = (data) => {
                 <input 
                 {...register('Number', {
                   required: 'Поле обязательно к заполнению',
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'Введите корректный номер',
+                  },
+                  minLength: {
+                    value: 10,
+                    message: 'Номер слишком короткий'
+                  },
                   maxLength: {
                     value: 16,
                     message: 'Максимум 16 символов',
-                    valueAsNumber: true,
-                  },
-                  valueAsNumber: true,
-                  pattern:{
-                    value: /^(0|[1-9]\d*)(\.\d+)?$/
                   },
 
                 })}
@@ -210,7 +204,7 @@ const onSubmit = (data) => {
 
                 })}
                 placeholder="" 
-                type="text" 
+                type="password" 
                 className="field"
                 /> 
 
@@ -225,28 +219,31 @@ const onSubmit = (data) => {
                 <label data-v-493f45f2="" className="input__container field__container" label="Повторите пароль">
                 <span className="field__label">Повторите пароль</span></label>
                 <input 
-                {...register('password2', {
+                {...register('password_repeat', {
                   required: 'Поле обязательно к заполнению',
                   maxLength: {
                     value: 16,
                     message: 'Максимум 16 символов'
                   },
                   minLength: {
-                    value: 6,
+                    value: 8,
                     message: 'Пароль слишком короткий'
-                  }
+                  },
+                  validate: value =>
+                  value === password.current || "Пароли не совпадают"
 
                 })}
                 placeholder="" 
-                type="text" 
+                type="password" 
                 className="field"
                 /> 
 
                 {/* Текст для вывода ошибки */}
 
-                <div style={{height: 0, color: "red", marginBottom: 30}}>
-                  {errors?.password2 && <p>{errors?.password2?.message || "Error!"}</p>}
+                <div style={{height: 0, color: "red", marginBottom: 60}}>
+                  {errors?.password_repeat && <p>{errors?.password_repeat?.message || "Error!"}</p>}
                 </div>
+
 
                 <div data-v-493f45f2="" className="field__container"><button type="submit" data-v-493f45f2="" className="btn">Сохранить и продолжить</button></div>
     </form>
